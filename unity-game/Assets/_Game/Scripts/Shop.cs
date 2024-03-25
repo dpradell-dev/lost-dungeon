@@ -145,7 +145,7 @@ public class Shop : MonoBehaviour
         SetItemsApproachability(true);
     }
     
-    private void OnBuyWeaponSuccess(Transaction tx, bool hasUserOpHash)
+    private void OnBuyWeaponSuccess(TxResponse tx, bool hasUserOpHash)
     {
         if (hasUserOpHash)
         {

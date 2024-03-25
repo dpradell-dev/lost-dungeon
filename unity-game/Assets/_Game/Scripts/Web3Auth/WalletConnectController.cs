@@ -4,9 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
-using Nethereum.Hex.HexTypes;
-using Nethereum.RPC.Eth.DTOs;
-using Nethereum.RPC.Eth.Transactions;
 using Nethereum.Web3;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -19,100 +16,15 @@ using WalletConnectSharp.Sign.Models;
 using WalletConnectSharp.Sign.Models.Engine;
 using WalletConnectSharp.Sign.Models.Engine.Events;
 using WalletConnectUnity.Core;
+using WalletConnectUnity.Core.Evm;
 using WalletConnectUnity.Modal;
 using WalletConnectUnity.Modal.Sample;
 
 public class WalletConnectController : MonoBehaviour
 {
-    public class WCTransaction
-    {
-        [JsonProperty("from")] public string From { get; set; }
-
-        [JsonProperty("to")] public string To { get; set; }
-
-        [JsonProperty("gas", NullValueHandling = NullValueHandling.Ignore)]
-        public string Gas { get; set; }
-
-        [JsonProperty("gasPrice", NullValueHandling = NullValueHandling.Ignore)]
-        public string GasPrice { get; set; }
-
-        [JsonProperty("value")] public string Value { get; set; }
-
-        [JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
-        public string Data { get; set; } = "0x";
-    }
-    
-    [RpcMethod("eth_sendTransaction")]
-    [RpcRequestOptions(Clock.ONE_MINUTE, 99997)]
-    public class WCEthSendTransaction : List<WCTransaction>
-    {
-        public WCEthSendTransaction(params WCTransaction[] transactions) : base(transactions)
-        {
-        }
-        
-        [Preserve]
-        public WCEthSendTransaction()
-        {
-        }
-    }
-    
-    [RpcMethod("personal_sign")]
-    [RpcRequestOptions(Clock.ONE_MINUTE, 99998)]
-    public class PersonalSign : List<string>
-    {
-        public PersonalSign(string hexUtf8, string account) : base(new[] { hexUtf8, account })
-        {
-        }
-
-        [Preserve]
-        public PersonalSign()
-        {
-        }
-    }
-    
-    [RpcMethod("eth_chainId")]
-    [RpcRequestOptions(Clock.ONE_MINUTE, 99998)]
-    public class EthChainId
-    {
-        [Preserve]
-        public EthChainId()
-        {
-        }
-    }
-    
-    [RpcMethod("wallet_switchEthereumChain")]
-    [RpcRequestOptions(Clock.ONE_MINUTE, 99998)] // Adjust the clock and priority as needed
-    public class WCSwitchEthereumChain : List<object>
-    {
-        public WCSwitchEthereumChain(object chainIdData) : base(new[] { chainIdData })
-        {
-        }
-        
-        [Preserve]
-        public WCSwitchEthereumChain()
-        {
-        }
-    }
-    
-    [RpcMethod("wallet_addEthereumChain")]
-    [RpcRequestOptions(Clock.ONE_MINUTE, 99998)] // Adjust the clock and priority as needed
-    public class WCAddEthereumChain : List<object>
-    {
-        public WCAddEthereumChain(object chainData) : base(new[] { chainData })
-        {
-        }
-        
-        [Preserve]
-        public WCAddEthereumChain()
-        {
-        }
-    }
-    
     public event UnityAction<SessionStruct?> OnConnected;
     public event UnityAction<string> OnConnectionError;
     public event UnityAction OnDisconnected;
-
-    public SessionStruct? connectedSession;
     
     #region UNITY_LIFECYCLE
 
@@ -148,8 +60,7 @@ public class WalletConnectController : MonoBehaviour
                         return;
                     
                     Debug.Log($"[WalletConnectModalSample] Session connected. Topic: {@struct.Topic}");
-                    connectedSession = @struct;
-                    OnSessionConnected_Handler(s, connectedSession);
+                    OnSessionConnected_Handler(s, @struct);
                 };
             }
         };
@@ -226,7 +137,7 @@ public class WalletConnectController : MonoBehaviour
             // Get ActiveSession namespace
             //var currentNamespace = WalletConnect.Instance.ActiveSession.Namespaces.FirstOrDefault();
             var currentChainId = GetChainId(); // Implement this method to get the current chain ID
-            var currentFullChainId = Chain.EvmNamespace + ":" + currentChainId;
+            var currentFullChainId = ChainConstants.Namespaces.Evm + ":" + currentChainId;
             
             if (currentChainId != desiredChainId)
             {
@@ -250,18 +161,18 @@ public class WalletConnectController : MonoBehaviour
             }
 
             // Prepare the transaction
-            var txParams = new WCTransaction()
+            var txParams = new Transaction()
             {
-                From = newOwnerAddress,
-                To = contractAddress,
-                Data = encodedData,
-                Value = "0x0",
-                Gas = "0xFDE8", // Hex value for 65,000 gas limit
+                from = newOwnerAddress,
+                to = contractAddress,
+                data = encodedData,
+                value = "0x0",
+                gas = "0xFDE8", // Hex value for 65,000 gas limit
             };
 
-            var ethSendTransaction = new WCEthSendTransaction(txParams);
+            var ethSendTransaction = new EthSendTransaction(txParams);
             // The fullChainId might need to be adjusted based on the network specifics
-            var fullChainId = Chain.EvmNamespace + ":" + desiredChainId; // BEAM!
+            var fullChainId = ChainConstants.Namespaces.Evm + ":" + desiredChainId; // BEAM!
             
             await UniTask.Delay(1500);
             
@@ -273,7 +184,7 @@ public class WalletConnectController : MonoBehaviour
             
             // Send the transaction
             //var signClient = WalletConnect.Instance.SignClient;
-            var txHash = await WalletConnect.Instance.RequestAsync<WCEthSendTransaction, string>(ethSendTransaction);
+            var txHash = await WalletConnect.Instance.RequestAsync<EthSendTransaction, string>(ethSendTransaction);
             
             // Handle the transaction hash (e.g., display it, log it, etc.)
             Debug.Log("Transaction Hash: " + txHash);
@@ -302,14 +213,12 @@ public class WalletConnectController : MonoBehaviour
     private void OnSessionConnected_Handler(object sender, SessionStruct? session)
     {
         Debug.Log("WC SESSION CONNECTED");
-        connectedSession = session;
-        OnConnected?.Invoke(connectedSession);
+        OnConnected?.Invoke(session);
     }
     
     private void OnSessionDisconnected_Handler(object sender, EventArgs eventArgs)
     {
         Debug.LogWarning("WC SESSION DISCONNECTED");
-        connectedSession = null;
         OnDisconnected?.Invoke();
     }
     
@@ -317,7 +226,6 @@ public class WalletConnectController : MonoBehaviour
     {
         Debug.Log("WC SESSION CONNECTION ERROR");
         // No need for real disconnection as we're not connected yet.
-        connectedSession = null;
         OnConnectionError?.Invoke($"Connection error reason: {eventArgs}");
     }
     #endregion
@@ -341,18 +249,18 @@ public class WalletConnectController : MonoBehaviour
 
     private string GetConnectedAddress()
     {
-        var currentAddress = connectedSession.GetValueOrDefault().CurrentAddress(Chain.EvmNamespace);
+        var currentAddress = WalletConnect.Instance.ActiveSession.CurrentAddress(ChainConstants.Namespaces.Evm);
         return currentAddress.Address;
     }
     
     private int? GetChainId()
     {
-        var defaultChain = connectedSession.GetValueOrDefault().Namespaces.Keys.FirstOrDefault();
+        var defaultChain = WalletConnect.Instance.ActiveSession.Namespaces.Keys.FirstOrDefault();
     
         if (string.IsNullOrWhiteSpace(defaultChain))
             return null;
 
-        var defaultNamespace = connectedSession.GetValueOrDefault().Namespaces[defaultChain];
+        var defaultNamespace = WalletConnect.Instance.ActiveSession.Namespaces[defaultChain];
     
         if (defaultNamespace.Chains.Length == 0)
             return null;
@@ -381,24 +289,22 @@ public class WalletConnectController : MonoBehaviour
     {
         try
         {
-            var addChainParams = new
+
+            var beamChain = new EthereumChain()
             {
-                chainId = GameConstants.GameChainIdHex,
-                chainName = "Beam",
+                chainIdHex = GameConstants.GameChainIdHex,
+                name = "Beam",
                 rpcUrls = new [] {"https://build.onbeam.com/rpc"},
-                nativeCurrency = new
-                {
-                    symbol = "BEAM",
-                    decimals = 18
-                },
+                nativeCurrency = new Currency("Beam", "BEAM", 18),
                 blockExplorerUrls = new [] {"https://subnets.avax.network/beam"}
             };
-            var addChainRequest = new WCAddEthereumChain(addChainParams);
+            
+            var addChainRequest = new WalletAddEthereumChain(beamChain);
             
             var signClient = WalletConnect.Instance.SignClient;
             // Request to switch the Ethereum chain
             //TODO big change
-            var result = await WalletConnect.Instance.RequestAsync<WCAddEthereumChain, object>(addChainRequest);
+            var result = await WalletConnect.Instance.RequestAsync<WalletAddEthereumChain, object>(addChainRequest);
 
             // Interpret a null response as successful operation
             // https://docs.metamask.io/wallet/reference/wallet_addethereumchain/
@@ -415,13 +321,12 @@ public class WalletConnectController : MonoBehaviour
     {
         try
         {
-            var chainIdData = new { chainId = GameConstants.GameChainIdHex }; // Desired chain ID in hexadecimal
-            var switchChainRequest = new WCSwitchEthereumChain(chainIdData);
+            var switchChainRequest = new WalletSwitchEthereumChain(GameConstants.GameChainId.ToString());
             
             var signClient = WalletConnect.Instance.SignClient;
             // Request to switch the Ethereum chain
             //TODO big change!
-            var result = await WalletConnect.Instance.RequestAsync<WCSwitchEthereumChain, object>(switchChainRequest);
+            var result = await WalletConnect.Instance.RequestAsync<WalletSwitchEthereumChain, object>(switchChainRequest);
 
             // Interpret a null response as successful operation
             // https://docs.metamask.io/wallet/reference/wallet_switchethereumchain/
@@ -438,9 +343,9 @@ public class WalletConnectController : MonoBehaviour
     #region PRIVATE_METHODS
     private ConnectOptions BuildConnectOptions()
     {
-        var requiredNamespaces = new RequiredNamespaces();
+        // Using optional namespaces. Wallet will approve only chains it supports.
+        var optionalNamespaces = new Dictionary<string, ProposedNamespace>();
         
-        // TODO Make configurable
         var methods = new string[]
         {
             "eth_sendTransaction",
@@ -457,7 +362,7 @@ public class WalletConnectController : MonoBehaviour
             "chainChanged", "accountsChanged"
         };
         
-        requiredNamespaces.Add(Chain.EvmNamespace, new ProposedNamespace()
+        optionalNamespaces.Add(ChainConstants.Namespaces.Evm, new ProposedNamespace()
         {
             Chains = new []{"eip155:4337"},
             Events = events,
@@ -466,54 +371,8 @@ public class WalletConnectController : MonoBehaviour
 
         return new ConnectOptions
         {
-            RequiredNamespaces = requiredNamespaces
+            OptionalNamespaces = optionalNamespaces
         };
-    }
-    
-    private async UniTask<bool> AddBeamNetworkToSession()
-    {
-        var namespaces = new Namespaces();
-        
-        var methods = new string[]
-        {
-            "eth_sendTransaction",
-            "eth_signTransaction",
-            "eth_sign",
-            "personal_sign",
-            "eth_signTypedData",
-            "wallet_switchEthereumChain",
-            "wallet_addEthereumChain"
-        };
-
-        var events = new string[]
-        {
-            "chainChanged", "accountsChanged"
-        };
-
-        var connectedAddress = GetConnectedAddress();
-        
-        namespaces.Add(Chain.EvmNamespace, new Namespace()
-        {
-            Chains = new []{$"eip155:{GameConstants.GameChainId}"},
-            Events = events,
-            Methods = methods,
-            Accounts = new []{$"eip155:1:{connectedAddress}"}
-        });
-
-        try
-        {
-            var result = await WalletConnect.Instance.SignClient.UpdateSession(WalletConnect.Instance.ActiveSession.Topic,
-                new Namespaces(namespaces));
-
-            // We updated the session and added Beam network to namespaces.
-            Debug.Log("Updated");
-            return true;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            return false;
-        }
     }
     #endregion
 }

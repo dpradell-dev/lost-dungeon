@@ -38,7 +38,7 @@ public class TokenAsset
 }
 
 [Serializable]
-public class Transaction
+public class TxResponse
 {
     public string id;
     public string userOpHash;
@@ -48,7 +48,7 @@ public static partial class AzureFunctionCaller
 {
     public static Action<TokenAsset> onGetCurrencyBalanceSuccess;
     public static Action<ItemBalance> onGetItemBalanceSuccess;
-    public static Action<Transaction, bool> onBuyWeaponSuccess;
+    public static Action<TxResponse, bool> onBuyWeaponSuccess;
     public static Action<PlayFabError> onBuyWeaponFailure;
     public static Action onPoolingSuccess;
     public static Action onPoolingFailure;
@@ -180,7 +180,7 @@ public static partial class AzureFunctionCaller
     {
         if (!IsFunctionResultValid(result)) return;
         
-        var tx = JsonUtility.FromJson<Transaction>(result.FunctionResult.ToString());
+        var tx = JsonUtility.FromJson<TxResponse>(result.FunctionResult.ToString());
 
         // Check if deserialization was successful
         if (tx == null)
