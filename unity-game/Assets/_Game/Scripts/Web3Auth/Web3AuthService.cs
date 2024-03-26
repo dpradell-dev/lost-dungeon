@@ -344,7 +344,7 @@ public class Web3AuthService : MonoBehaviour
         }
     }
     
-    private async void OnFindRegisterSessionIntentSuccess(Transaction tx, bool completed)
+    private async void OnFindRegisterSessionIntentSuccess(TxResponse tx, bool completed)
     {
         if (completed)
         {

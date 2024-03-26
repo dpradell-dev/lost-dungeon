@@ -289,8 +289,20 @@ public class WalletConnectController : MonoBehaviour
     {
         try
         {
-
-            var beamChain = new EthereumChain()
+            Chain beamNetwork = new Chain(ChainConstants.Namespaces.Evm, GameConstants.GameChainId.ToString(),
+                "Beam Mainnet",
+                new Currency("BEAM", "BEAM", 18),
+                new BlockExplorer("Avalanche Explorer", "https://subnets.avax.network/beam"),
+                "https://build.onbeam.com/rpc",
+                true,
+                $"https://api.web3modal.com/public/getAssetImage/{ChainConstants.ImageIds[ChainConstants.References.Avalanche]}");
+            
+            /*
+            var currency = new Currency("Beam", "BEAM", 18);
+            var beamChain = new EthereumChain("4337", "Beam Mainnet", currency, new[] { "https://build.onbeam.com/rpc" },
+                new[] { "https://subnets.avax.network/beam" });
+                */
+            /*
             {
                 chainIdHex = GameConstants.GameChainIdHex,
                 name = "Beam",
@@ -298,7 +310,9 @@ public class WalletConnectController : MonoBehaviour
                 nativeCurrency = new Currency("Beam", "BEAM", 18),
                 blockExplorerUrls = new [] {"https://subnets.avax.network/beam"}
             };
-            
+            */
+
+            EthereumChain beamChain = new EthereumChain(ChainConstants.Chains.Avalanche);
             var addChainRequest = new WalletAddEthereumChain(beamChain);
             
             var signClient = WalletConnect.Instance.SignClient;
@@ -345,6 +359,7 @@ public class WalletConnectController : MonoBehaviour
     {
         // Using optional namespaces. Wallet will approve only chains it supports.
         var optionalNamespaces = new Dictionary<string, ProposedNamespace>();
+        var requiredNamespaces = new RequiredNamespaces();
         
         var methods = new string[]
         {
@@ -362,15 +377,23 @@ public class WalletConnectController : MonoBehaviour
             "chainChanged", "accountsChanged"
         };
         
+        requiredNamespaces.Add(ChainConstants.Namespaces.Evm, new ProposedNamespace()
+        {
+            Chains = new []{"eip155:1"},
+            Events = events,
+            Methods = methods
+        });
+        
         optionalNamespaces.Add(ChainConstants.Namespaces.Evm, new ProposedNamespace()
         {
-            Chains = new []{"eip155:4337"},
+            Chains = new []{"eip155:4337", "eip155:43114"},
             Events = events,
             Methods = methods
         });
 
         return new ConnectOptions
         {
+            RequiredNamespaces = requiredNamespaces,
             OptionalNamespaces = optionalNamespaces
         };
     }

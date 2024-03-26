@@ -17,7 +17,7 @@ public static partial class AzureFunctionCaller
     public static Action<string> onChallengeRequestSuccess;
     public static Action onChallengeVerifySuccess;
     public static Action<string> onRegisterSessionSuccess;
-    public static Action<Transaction, bool> onFindSessionRegistrationSuccess;
+    public static Action<TxResponse, bool> onFindSessionRegistrationSuccess;
     public static Action<string> onCompleteWeb3AuthSuccess;
     public static Action<OpenfortPlayerResponse> onCreateOpenfortPlayerSuccess;
 
@@ -187,7 +187,7 @@ public static partial class AzureFunctionCaller
     {
         if (!IsFunctionResultValid(result)) return;
         
-        var tx = JsonUtility.FromJson<Transaction>(result.FunctionResult.ToString());
+        var tx = JsonUtility.FromJson<TxResponse>(result.FunctionResult.ToString());
 
         // Check if deserialization was successful
         if (tx == null)
