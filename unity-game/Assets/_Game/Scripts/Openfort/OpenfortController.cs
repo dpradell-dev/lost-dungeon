@@ -1,16 +1,13 @@
 using System;
-using Clients;
-using Cysharp.Threading.Tasks;
-using Openfort;
-using Openfort.Model;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 
 public class OpenfortController: MonoBehaviour
 {
     public static OpenfortController Instance { get; private set; }
     
-    private OpenfortSDK _openfort;
-    private string _oauthAccessToken;
+    // TODO private OpenfortSDK _openfort;
+    // TODO private string _oauthAccessToken;
     
     private void Awake()
     {
@@ -25,8 +22,10 @@ public class OpenfortController: MonoBehaviour
         }
     }
     
+    // TODO: NEW AUTHENTICATION FLOW
     public async UniTask AuthenticateWithOAuth(string idToken)
     {
+        /*
         Debug.Log("PlayFab session ticket: " + idToken);
 
         var authOptions = new Shield.ShieldAuthOptions();
@@ -51,5 +50,6 @@ public class OpenfortController: MonoBehaviour
         {
             await _openfort.ConfigureEmbeddedSignerRecovery(4337, authOptions, "secret");
         }
+        */
     }
 }

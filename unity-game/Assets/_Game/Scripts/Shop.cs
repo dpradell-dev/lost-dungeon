@@ -29,13 +29,13 @@ public class Shop : MonoBehaviour
     
     private static readonly int CloseCondition = Animator.StringToHash("Close");
 
-    private OpenfortSDK _openfort;
+    // TODO private OpenfortSDK _openfort;
 
     #region UNITY_LIFECYCLE
 
     private void Start()
     {
-        _openfort = new OpenfortSDK(OFStaticData.PublishableKey);
+        // TODO _openfort = new OpenfortSDK(OFStaticData.PublishableKey);
     }
 
     private void OnEnable()
