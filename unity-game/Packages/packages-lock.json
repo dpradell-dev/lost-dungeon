@@ -23,10 +23,10 @@
       "depth": 1,
       "source": "registry",
       "dependencies": {
+        "com.unity.burst": "1.5.1",
         "com.unity.2d.sprite": "1.0.0",
         "com.unity.mathematics": "1.1.0",
-        "com.unity.modules.uielements": "1.0.0",
-        "com.unity.burst": "1.5.1"
+        "com.unity.modules.uielements": "1.0.0"
       },
       "url": "https://packages.unity.com"
     },
@@ -49,9 +49,9 @@
       "depth": 0,
       "source": "registry",
       "dependencies": {
-        "com.unity.2d.animation": "7.0.9",
         "com.unity.2d.common": "6.0.6",
-        "com.unity.2d.sprite": "1.0.0"
+        "com.unity.2d.sprite": "1.0.0",
+        "com.unity.2d.animation": "7.0.9"
       },
       "url": "https://packages.unity.com"
     },
@@ -66,9 +66,9 @@
       "depth": 0,
       "source": "registry",
       "dependencies": {
-        "com.unity.mathematics": "1.1.0",
-        "com.unity.2d.common": "6.0.6",
         "com.unity.2d.path": "5.0.2",
+        "com.unity.2d.common": "6.0.6",
+        "com.unity.mathematics": "1.1.0",
         "com.unity.modules.physics2d": "1.0.0"
       },
       "url": "https://packages.unity.com"
@@ -197,7 +197,7 @@
       }
     },
     "com.unity.test-framework": {
-      "version": "1.1.31",
+      "version": "1.1.33",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -221,9 +221,9 @@
       "depth": 0,
       "source": "registry",
       "dependencies": {
+        "com.unity.modules.audio": "1.0.0",
         "com.unity.modules.director": "1.0.0",
         "com.unity.modules.animation": "1.0.0",
-        "com.unity.modules.audio": "1.0.0",
         "com.unity.modules.particlesystem": "1.0.0"
       },
       "url": "https://packages.unity.com"
@@ -236,36 +236,6 @@
         "com.unity.modules.ui": "1.0.0",
         "com.unity.modules.imgui": "1.0.0"
       }
-    },
-    "com.walletconnect.core": {
-      "version": "3.0.6",
-      "depth": 1,
-      "source": "registry",
-      "dependencies": {
-        "com.unity.nuget.newtonsoft-json": "3.0.0"
-      },
-      "url": "https://package.openupm.com"
-    },
-    "com.walletconnect.modal": {
-      "version": "1.0.6",
-      "depth": 0,
-      "source": "registry",
-      "dependencies": {
-        "com.walletconnect.core": "3.0.6",
-        "com.walletconnect.ui": "1.0.6"
-      },
-      "url": "https://package.openupm.com"
-    },
-    "com.walletconnect.ui": {
-      "version": "1.0.6",
-      "depth": 1,
-      "source": "registry",
-      "dependencies": {
-        "com.walletconnect.core": "3.0.6",
-        "com.unity.textmeshpro": "3.0.0",
-        "com.unity.ugui": "1.0.0"
-      },
-      "url": "https://package.openupm.com"
     },
     "com.unity.modules.ai": {
       "version": "1.0.0",

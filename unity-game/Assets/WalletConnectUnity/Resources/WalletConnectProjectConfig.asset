@@ -9,16 +9,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b105f096d21e42cfac1c5f6ae49fe4ca, type: 3}
+  m_Script: {fileID: 0}
   m_Name: WalletConnectProjectConfig
-  m_EditorClassIdentifier: 
-  <Id>k__BackingField: bb18f798c3f3e4c2a3b3e0fcc42cb6c2
+  m_EditorClassIdentifier: WalletConnectUnity.Core:WalletConnectUnity.Core:ProjectConfiguration
+  <Id>k__BackingField: 
   <Metadata>k__BackingField:
-    Name: Lost Dungeon
-    Description: Openfort's demo game
-    Url: openfort.xyz
-    Icons:
-    - https://pbs.twimg.com/profile_images/1691482304747646976/4HUy-4ku_400x400.jpg
+    Name: 
+    Description: 
+    Url: 
+    Icons: []
     Redirect:
       Native: 
       Universal: 
