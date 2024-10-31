@@ -1,11 +1,5 @@
 {
   "dependencies": {
-    "com.openfort.sdk": {
-      "version": "file:openfort-csharp-unity-main",
-      "depth": 0,
-      "source": "embedded",
-      "dependencies": {}
-    },
     "com.unity.2d.animation": {
       "version": "7.0.10",
       "depth": 0,
