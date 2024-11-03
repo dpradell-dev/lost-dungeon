@@ -67,11 +67,25 @@ public class OpenfortController: MonoBehaviour, IAuthenticationService
             Debug.Log("Failed to log in: " + e.Message);
         }
 
-        await ConfigureEmbeddedSigner(accessToken);
+        await UniTask.Delay(1000);
+        await ConfigureEmbeddedSigner();
     }
 
-    private async UniTask ConfigureEmbeddedSigner(string accessToken)
+    private async UniTask ConfigureEmbeddedSigner()
     {
+        try 
+        {
+            Debug.Log("Getting access token...");
+            accessToken = await openfortSDK.GetAccessToken();
+            Debug.Log("Access token retrieved successfully");
+        }
+        catch (Exception e)
+        {
+            Debug.LogError(e.Message);
+            Debug.Log("Failed to get access token: " + e.Message);
+            throw;
+        }
+
         try
         { 
             int chainId = 11155111; // Soneium Minato chain ID
