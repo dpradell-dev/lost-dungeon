@@ -211,6 +211,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d54d89a23840444bbd2489b3f7dd10de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PublishableKey: pk_test_b978024c-d0b0-5e28-8e37-1eb7b970dcdd
-  ShieldApiKey: b4216b9d-a69f-479f-82e8-1162072aa0bd
-  ShieldEncryptionShare: AlxvufDZf43HwjqA2pvhAmBBnNulJzmYsv6EjZuavcD9
+  PublishableKey: pk_test_1ea91913-8d8b-5ca0-8b0f-3e1a5a97d970
+  ShieldApiKey: 666489f2-00d4-4c1a-8dfe-a70f796e0dcf
+  ShieldEncryptionShare: Aq4Ic/B142qpQGFCT6y2nzmQYxjFypL67vh0CzJ5jPE0

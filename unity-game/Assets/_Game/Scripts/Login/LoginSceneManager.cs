@@ -195,13 +195,13 @@ public class LoginSceneManager : MonoBehaviour
             ForceLink = false // Set to true to overwrite any existing account with this Custom ID
         };
 
-        void ResultCallback(LinkCustomIDResult requestResponse)
+        async void ResultCallback(LinkCustomIDResult requestResponse)
         {
             Debug.Log("Successfully linked custom ID to the currently logged-in user");
 
             //TODO-EMB
             // Create embedded account
-            OpenfortController.Instance.AuthenticateWithThirdPartyProvider(result.SessionTicket);
+            await OpenfortController.Instance.AuthenticateWithThirdPartyProvider(result.SessionTicket);
             Debug.Log("Embedded account created");
             
             LoadMenuScene();
@@ -445,7 +445,7 @@ public class LoginSceneManager : MonoBehaviour
         {
             //TODO-EMB
             // Create embedded account
-            OpenfortController.Instance.AuthenticateWithThirdPartyProvider(result.SessionTicket);
+            await OpenfortController.Instance.AuthenticateWithThirdPartyProvider(result.SessionTicket);
             Debug.Log("Embedded account created");
             
             LoadMenuScene();

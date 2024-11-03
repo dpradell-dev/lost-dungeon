@@ -5,5 +5,5 @@ public interface IAuthenticationService
 {
     event Action OnSdkInitialized;
     UniTask InitializeSdkAsync();
-    void AuthenticateWithThirdPartyProvider(string accessToken);
+    UniTask AuthenticateWithThirdPartyProvider(string accessToken);
 }

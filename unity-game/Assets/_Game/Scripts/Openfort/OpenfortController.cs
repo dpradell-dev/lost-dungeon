@@ -35,16 +35,6 @@ public class OpenfortController: MonoBehaviour, IAuthenticationService
         await InitializeSdkAsync();
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            
-            ConfigureEmbeddedSigner();
-            
-        }
-    }
-
     public async UniTask InitializeSdkAsync()
     {
         try
@@ -61,11 +51,12 @@ public class OpenfortController: MonoBehaviour, IAuthenticationService
         }
     }
 
-    public async void AuthenticateWithThirdPartyProvider(string accessToken)
+    public async UniTask AuthenticateWithThirdPartyProvider(string accessToken)
     {
+        
+        // Create third-party oauth request
         try
         {
-            // Create third-party oauth request
             ThirdPartyOAuthRequest thirdPartyOAuthRequest = new ThirdPartyOAuthRequest(ThirdPartyOAuthProvider.Playfab, accessToken, TokenType.IdToken);
             Debug.Log("Authenticating...");
             await openfortSDK.AuthenticateWithThirdPartyProvider(thirdPartyOAuthRequest);
@@ -75,63 +66,12 @@ public class OpenfortController: MonoBehaviour, IAuthenticationService
         {
             Debug.Log("Failed to log in: " + e.Message);
         }
+
+        await ConfigureEmbeddedSigner(accessToken);
     }
 
-    public async void LogInWithEmailPassword(string email, string password)
+    private async UniTask ConfigureEmbeddedSigner(string accessToken)
     {
-        try
-        {
-            Debug.Log("Logging in...");
-            await openfortSDK.LogInWithEmailPassword(email, password);
-            Debug.Log("Logged in successfully");
-        }
-        catch (Exception e)
-        {
-            Debug.Log("Failed to log in: " + e.Message);
-        }
-    }
-
-    public async void SignUpWithEmailPassword(string email, string password)
-    {
-        try
-        {
-            Debug.Log("Registering...");
-            await openfortSDK.SignUpWithEmailPassword(email, password);
-            Debug.Log("Registered successfully");
-        }
-        catch (Exception e)
-        {
-            Debug.Log("Failed to register: " + e.Message);
-        }
-
-        // After signing up, log in the user
-        try
-        {
-            Debug.Log("Logging in...");
-            await openfortSDK.LogInWithEmailPassword(email, password);
-            Debug.Log("Logged in successfully");
-        }
-        catch (Exception e)
-        {
-            Debug.Log("Failed to log in: " + e.Message);
-        }
-
-        // We can now configure the embedded signer
-        //await UniTask.Delay(1000);
-        ConfigureEmbeddedSigner();
-    }
-
-    private async void ConfigureEmbeddedSigner()
-    {
-        Debug.Log("Getting access token...");
-        accessToken = await openfortSDK.GetAccessToken();
-
-        if (accessToken == null)
-        {
-            Debug.Log("Failed to get access token");
-            return;
-        }
-
         try
         { 
             int chainId = 11155111; // Soneium Minato chain ID
